@@ -14,6 +14,9 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
+/*
+* http://127.0.0.1:8888/ilanyu
+* */
 public class MainServer extends AbstractHandler {
 
     public static void run() throws Exception{
