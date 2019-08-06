@@ -5,6 +5,18 @@ import com.vvvtimes.server.MainServer;
  */
 public class Main {
     public static void main(String[] args) throws Exception{
-        MainServer.run();
+        Integer port = null;
+        try {
+            if (args.length>0){
+                port = Integer.parseInt(args[0]);
+            }
+        }catch (Exception e){
+
+        }
+        if (port == null){
+            port = 8888;
+        }
+        MainServer.run(port);
+
     }
 }

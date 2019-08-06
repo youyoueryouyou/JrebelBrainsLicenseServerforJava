@@ -15,30 +15,42 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
 /*
-* http://127.0.0.1:8888/ilanyu
-* */
+ * http://127.0.0.1:8888/
+ * */
 public class MainServer extends AbstractHandler {
 
-    public static void run() throws Exception{
-        Server server = new Server(8888);
-        server.setHandler(new MainServer());
-        server.start();
-        server.join();
-    }
-    public static void main(String[] args) throws Exception {
-        Server server = new Server(8888);
+    public static void run(Integer port) throws Exception {
+        Server server = new Server(port);
         server.setHandler(new MainServer());
         server.start();
         server.join();
     }
 
+    public static void main(String[] args) throws Exception {
+        Integer port = null;
+        try {
+            if (args.length > 0) {
+                port = Integer.parseInt(args[0]);
+            }
+        } catch (Exception e) {
+        }
+        if (port == null) {
+            port = 8888;
+        }
+        Server server = new Server(port);
+        server.setHandler(new MainServer());
+        server.start();
+        server.join();
+    }
+
+    @Override
     public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         if (target.equals("/")) {
             indexHandler(target, baseRequest, request, response);
-        }  else if (target.equals("/jrebel/jrebel/validate-connection")) {
+        } else if (target.equals("/jrebel/jrebel/validate-connection")) {
             jrebelLeasesHandler(target, baseRequest, request, response);
-        }  else if (target.equals("/agent/leases/validate-connection")) {
+        } else if (target.equals("/agent/leases/validate-connection")) {
             jrebelLeasesHandler(target, baseRequest, request, response);
         } else {
             jrebelLeasesHandler(target, baseRequest, request, response);
@@ -51,10 +63,10 @@ public class MainServer extends AbstractHandler {
         response.setContentType("application/json; charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
         String clientRandomness = request.getParameter("randomness");
-        if (clientRandomness == null){
-            UUID uuid=UUID.randomUUID();
+        if (clientRandomness == null) {
+            UUID uuid = UUID.randomUUID();
             String str = uuid.toString();
-            String uuidStr =str.replace("-", "").substring(0,12);
+            String uuidStr = str.replace("-", "").substring(0, 12);
             clientRandomness = uuidStr;
         }
         String username = request.getParameter("username");
@@ -88,11 +100,11 @@ public class MainServer extends AbstractHandler {
         if (clientRandomness == null || username == null || guid == null) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         } else {
-            JrebelSign jrebelSign =new JrebelSign();
-            jrebelSign.toLeaseCreateJson(clientRandomness,guid);
+            JrebelSign jrebelSign = new JrebelSign();
+            jrebelSign.toLeaseCreateJson(clientRandomness, guid);
             String signature = jrebelSign.getSignature();
-            jsonObject.put("signature",signature);
-            jsonObject.put("company",username);
+            jsonObject.put("signature", signature);
+            jsonObject.put("company", username);
             String body = jsonObject.toString();
             response.getWriter().print(body);
         }
